@@ -1,0 +1,17 @@
+drop database bank;
+
+create database bank;
+
+
+use bank;
+
+create table bank.bank_record (N int NOT NULL auto_increment,
+							   balance int NOT NULL,
+                               deposit int NULL,
+                               withdrawal int NULL,
+                               cash_sent int NULL,
+                               PRIMARY KEY (N))
+                               
+select * from bank.bank_record;
+
+drop table bank.bank_record;
