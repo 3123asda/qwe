@@ -1,0 +1,115 @@
+package Bank;
+
+import java.util.Scanner;
+import java.sql.Connection;
+import java.sql.DriverManager;
+import java.sql.ResultSet;
+import java.sql.Statement;
+import java.sql.SQLException;
+
+public class BabankMain {
+    public static void main(String[] args) {
+        Scanner scanner = new Scanner(System.in);
+        babank account = null;
+        while (true) {
+            try {
+
+                Connection connection = DriverManager.getConnection("jdbc:mysql://127.0.0.2:3306/bank", "root", "topitagupa09155524404");
+                Statement statement  = connection.createStatement();
+
+                System.out.println("Welcome to GP4 BANK");
+                System.out.println("---------------");
+                System.out.println("1. Open account");
+                System.out.println("2. Deposit");
+                System.out.println("3. Withdrawal");
+                System.out.println("4. Check balance");
+                System.out.println("5. Send cash");
+                System.out.println("6. Exit");
+                System.out.println("---------------");
+
+                System.out.print("Please enter the number of choice: ");
+
+                int choice = scanner.nextInt();
+
+                if (choice == 1) {
+                    System.out.print("Open Account is selected, Please enter the initial balance: ");
+                    double balance = scanner.nextDouble();
+                    account = new babank(balance);
+
+                    String insert_query = "INSERT INTO bank_record(N,balance) VALUE("+0+", '"+balance+"')";
+                    statement.executeUpdate(insert_query);
+
+                    System.out.println("Account opened successfully!");
+                } else if (choice == 2) {
+                    if (account == null) {
+                        System.out.println("Please open an account first!");
+                    } else {
+                        System.out.println("Deposit is selected, Please enter the amount to deposit: ");
+                        double amount = scanner.nextDouble();
+                        if (amount <= 100) {
+                            System.out.println("Your deposit cannot be processed due to the amount: " + amount);
+                            System.out.println("At least 100 and above can only be deposited.");
+                        } else {
+                            account.deposit(amount);
+                            System.out.println("Deposit successfully. Current balance: " + account.getBalance());
+                        }
+                    }
+                } else if (choice == 3) {
+                    if (account == null) {
+                        System.out.println("Please open an account first!");
+                    } else {
+                        System.out.println("Withdrawal is selected, Please enter the amount to withdraw: ");
+                        double amount = scanner.nextDouble();
+                        if (amount % 100 == 0){
+                            if (account.getBalance() < amount) {
+                                System.out.println("Invalid amount!");
+                            } else if(amount < 100){
+                                System.out.println("Cannot process your amount.");
+                            } else {
+                                account.withdraw(amount);
+                                System.out.println("Withdrawal Successful. Current balance: " + account.getBalance());
+                            }
+                        } else {
+                            System.out.println("Cannot process your amount.");
+                            System.out.println("This machine only dispenses 100, 500, and 1000 bills.");
+                        }
+
+                    }
+                } else if (choice == 4) {
+                    if (account == null) {
+                        System.out.println("Please open an account first!");
+                    } else {
+                        System.out.println("Check balance is selected, Current balance: " + account.getBalance());
+                        System.out.println("Select another number of choice or Select '6' to exit!");
+                    }
+                } else if (choice == 5) {
+                    if (account == null) {
+                        System.out.println("Please open an account first!");
+                    } else {
+                        System.out.println("Send cash is selected, Enter the amount to send: ");
+                        double amount = scanner.nextDouble();
+                        if (account.getBalance() < amount) {
+                            System.out.println("Invalid amount! Try Depositing first.");
+                        } else {
+                            account.send(amount);
+                            System.out.println("Send Successful. Current balance: " + account.getBalance());
+                        }
+                    }
+                } else if (choice == 6) {
+                    System.out.println("Thank you for using our Bank system.");
+                    break;
+                } else {
+                    System.out.println("Invalid choice. Please try again!");
+                }
+
+
+            } catch (Exception e) {
+                System.out.println("Error Reported " + e);
+                String letter = scanner.next();
+                System.out.println("Your input " + letter + " is not accepted. Please try again.");
+
+            }
+        }
+
+    }
+}
